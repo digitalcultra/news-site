@@ -23,7 +23,7 @@ def page(title,desc,path,body,lds=(),ogtype='website'):
       '<style>body{font:16px/1.5 system-ui,sans-serif;max-width:760px;margin:auto;padding:12px;background:#0b0d12;color:#e8e8ee}a{color:#7cc4ff}.m{color:#9aa}.b{display:inline-block;border:1px solid #445;border-radius:9px;padding:1px 8px;margin:2px;font-size:13px}nav a{margin-right:12px}</style>'
       + ''.join(ld(x) for x in lds) +
       f'</head><body><nav><a href="/">{E(SITE_NAME)}</a><a href="/section/local">Local</a><a href="/section/national">National</a><a href="/section/world">World</a><a href="/about">About</a></nav><main>{body}</main>'
-      '<footer class="m"><p><a href="/about">About</a> · <a href="/contact">Contact</a> · <a href="/editorial-policy">Editorial policy</a> · <a href="/feed.xml">RSS</a></p></footer></body></html>')
+      '<footer class="m"><p><a href="/about">About</a> · <a href="/contact">Contact</a> · <a href="/editorial-policy">Editorial policy</a> · <a href="/feed.xml">RSS</a></p></footer><script src="/meter.js" defer></script></body></html>')
 def summary(s):
     lv=', '.join(f'{k}: {v}' for k,v in sorted(s['leans'].items()))
     return (f"{s['n']} outlet(s) covered this story between {iso(s['first'])[:16].replace('T',' ')} and {iso(s['last'])[:16].replace('T',' ')} UTC. "

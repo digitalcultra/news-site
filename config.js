@@ -1,8 +1,9 @@
 // ===== Digital Cultra monetization config (News) =====
-// TODO(owner): create these memberships in Payhip (Dashboard > Memberships) and paste the real checkout URLs.
+// Digital Cultra News Insider (Payhip membership rx0Sb)
+window.MEMBERSHIP_PAGE = "https://payhip.com/b/rx0Sb";
 window.MEMBERSHIP_LINKS = {
-  monthly: "https://payhip.com/DigitalCultra/TODO-news-member-monthly", // TODO: $4/mo Payhip membership URL
-  yearly:  "https://payhip.com/DigitalCultra/TODO-news-member-yearly"   // TODO: $36/yr Payhip membership URL
+  monthly: "https://payhip.com/order?link=rx0Sb&pricing_plan=63Wd1yX9zw", // $4/mo
+  yearly:  "https://payhip.com/order?link=rx0Sb&pricing_plan=ZwzKa405G9"  // $36/yr
 };
 // TODO(owner): replace 'TODO-20' with your Amazon Associates tracking ID (e.g. yourid-20) after approval.
 window.AFFILIATE_TAG = "TODO-20";

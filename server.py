@@ -74,6 +74,8 @@ def seo_stories():
     if time.time()-SEOC[0]>600: SEOC[1]=sorted(news('IL','Chicago')['stories'],key=lambda s:(-s['score'],-s['last'])); SEOC[0]=time.time()
     return SEOC[1]
 SECT={'local':'Local news','national':'National news','world':'World news'}
+import threading,os
+SIGLOCK=threading.Lock(); SIGFILE=os.environ.get('SIGNUP_FILE','signups.json')
 class H(http.server.SimpleHTTPRequestHandler):
     def out(self,body,ct,code=200):
         b=body.encode(); self.send_response(code); self.send_header('Content-Type',ct+'; charset=utf-8'); self.send_header('Cache-Control','public, max-age=300'); self.end_headers(); self.wfile.write(b)
@@ -93,6 +95,19 @@ class H(http.server.SimpleHTTPRequestHandler):
         q=urllib.parse.parse_qs(p.query); st=q.get('state',['IL'])[0][:2].upper(); ci=re.sub('[^A-Za-z .-]','',q.get('city',[''])[0])[:40]
         b=json.dumps(news(st,ci)).encode()
         self.send_response(200); self.send_header('Content-Type','application/json'); self.end_headers(); self.wfile.write(b)
+    def do_POST(self):
+        if urllib.parse.urlparse(self.path).path!='/api/signup': return self.out('{"ok":false}','application/json',404)
+        try:
+            n=min(int(self.headers.get('Content-Length',0)),2000); d=json.loads(self.rfile.read(n) or b'{}')
+            em=str(d.get('email','')).strip()[:120]; ci=re.sub('[^A-Za-z .,-]','',str(d.get('city','')))[:60]
+            if not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$',em): return self.out('{"ok":false,"error":"email"}','application/json',400)
+            with SIGLOCK:
+                try: L=json.load(open(SIGFILE))
+                except Exception: L=[]
+                if not any(x['email'].lower()==em.lower() for x in L): L.append({'email':em,'city':ci,'t':int(time.time())})
+                json.dump(L,open(SIGFILE,'w'))
+            return self.out('{"ok":true}','application/json')
+        except Exception: return self.out('{"ok":false}','application/json',400)
     def log_message(self,*a):pass
 import os
 http.server.ThreadingHTTPServer(('0.0.0.0',int(os.environ.get('PORT','8795'))),H).serve_forever()

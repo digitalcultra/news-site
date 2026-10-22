@@ -1,0 +1,40 @@
+/* Digital Cultra News: metered join prompt. Client-side only; page HTML stays fully crawlable. */
+(function(){
+  var FREE=5,K='dcn_story_opens',D='dcn_join_dismissed',P='https://payhip.com/b/rx0Sb';
+  var M=window.MEMBERSHIP_LINKS||{monthly:'https://payhip.com/order?link=rx0Sb&pricing_plan=63Wd1yX9zw',yearly:'https://payhip.com/order?link=rx0Sb&pricing_plan=ZwzKa405G9'};
+  function get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  var isStory=/^\/story\//.test(location.pathname);
+  var seen=get(K)||[];
+  if(isStory&&seen.indexOf(location.pathname)<0){seen.push(location.pathname);set(K,seen)}
+  var used=seen.length,left=Math.max(0,FREE-used);
+  var css=document.createElement('style');css.textContent=
+  '.dcm-bar{position:fixed;left:12px;bottom:12px;z-index:9998;background:#111a2b;color:#dfe6f3;border:1px solid #2a3a5a;border-radius:20px;padding:6px 12px;font:13px system-ui}.dcm-bar a{color:#7fb4ff}'+
+  '.dcm-ov{position:fixed;inset:0;z-index:9999;background:rgba(5,10,20,.72);display:flex;align-items:center;justify-content:center;padding:16px}'+
+  '.dcm-box{max-width:440px;width:100%;background:#0f1726;color:#e8eefa;border:1px solid #2a3a5a;border-radius:14px;padding:20px;font:15px/1.45 system-ui;position:relative}'+
+  '.dcm-box h2{margin:0 0 6px;font-size:20px}.dcm-box ul{padding-left:18px;margin:8px 0}.dcm-x{position:absolute;top:8px;right:10px;background:none;border:0;color:#aab;font-size:22px;cursor:pointer}'+
+  '.dcm-b{display:block;text-align:center;margin:8px 0;padding:10px;border-radius:9px;background:#3b82f6;color:#fff;text-decoration:none;font-weight:600}.dcm-b.alt{background:#1e293b;border:1px solid #3b82f6}'+
+  '.dcm-f{border-top:1px solid #2a3a5a;margin-top:12px;padding-top:10px}.dcm-f input{width:100%;box-sizing:border-box;margin:4px 0;padding:8px;border-radius:7px;border:1px solid #334;background:#0b1220;color:#fff}.dcm-f button{width:100%;padding:8px;border-radius:7px;border:0;background:#22c55e;color:#04210f;font-weight:600;cursor:pointer}.dcm-s{font-size:12px;opacity:.7}';
+  document.head.appendChild(css);
+  var bar=document.createElement('div');bar.className='dcm-bar';
+  bar.innerHTML=left>0?(left+' of '+FREE+' free stories left · <a href="'+P+'" target="_blank" rel="noopener">Insider</a>'):'Free stories used · <a href="#" id="dcm-open">Join Insider</a>';
+  document.body.appendChild(bar);
+  function show(){
+    if(document.querySelector('.dcm-ov'))return;
+    var o=document.createElement('div');o.className='dcm-ov';o.setAttribute('role','dialog');
+    o.innerHTML='<div class="dcm-box"><button class="dcm-x" aria-label="Close">&times;</button><h2>Join Digital Cultra News Insider</h2>'+
+    '<p>You\u2019ve read your '+FREE+' free stories. Headlines stay free \u2014 Insider gets you more:</p>'+
+    '<ul><li>Local breaking-news email alerts</li><li>Full underreported section</li><li>Ad-free site</li><li>Early access to story videos</li></ul>'+
+    '<a class="dcm-b" href="'+M.monthly+'" target="_blank" rel="noopener">$4 / month</a><a class="dcm-b alt" href="'+M.yearly+'" target="_blank" rel="noopener">$36 / year</a>'+
+    '<form class="dcm-f"><b>Get a free daily local email instead</b><input type="email" name="email" placeholder="Email" required><input name="city" placeholder="City" required><button>Sign me up</button><div class="dcm-s">One email a day. Unsubscribe anytime.</div></form></div>';
+    document.body.appendChild(o);
+    function close(){o.remove();set(D,1)}
+    o.querySelector('.dcm-x').onclick=close;o.onclick=function(e){if(e.target===o)close()};
+    o.querySelector('form').onsubmit=function(e){e.preventDefault();var f=e.target,s=f.querySelector('.dcm-s');
+      fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:f.email.value,city:f.city.value})})
+      .then(function(r){return r.json()}).then(function(j){s.textContent=j.ok?'You\u2019re on the list! Thanks.':'Please check your email address.';if(j.ok)set(D,1)})
+      .catch(function(){s.textContent='Could not save right now, try again later.'})};
+  }
+  var a=document.getElementById('dcm-open');if(a)a.onclick=function(e){e.preventDefault();show()};
+  if(isStory&&used>FREE&&!get(D))show();
+})();
