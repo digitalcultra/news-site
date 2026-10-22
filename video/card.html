@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../infographic.css">
+<style>html,body{margin:0;width:1080px;height:1920px;background:transparent}
+#bg{position:fixed;inset:0;background:linear-gradient(180deg,#0b0f17aa,#0b0f17ee),var(--bg) center/cover,#0b0f17}
+#w{position:absolute;left:60px;right:60px;top:50%;transform:translateY(-50%)}
+.ig{--u:2.6}.ig .igc{margin:0;box-shadow:0 30px 80px #000a}
+#brand{position:absolute;left:60px;right:60px;bottom:90px;display:flex;justify-content:space-between;color:#e6edf3;font:700 34px system-ui}
+#brand i{color:#e23b3b;font-style:normal}.hide{display:none}</style></head><body>
+<div id="bg"></div><div id="w"></div><div id="brand"><span><i>●</i> Digital Cultra News</span><span style="color:#8b949e;font-weight:500">payhip.com/DigitalCultra</span></div>
+<script src="../infographic.js"></script><script>
+DCNInfo.setBase('../');
+window.show=(story,card,layer)=>{const h=DCNInfo[card](story);document.getElementById('w').innerHTML=h?'<div class="ig">'+h+'</div>':'';
+ const bgname=(h.match(/fffuel\/(\w+)\.svg/)||[])[1]||'lllook';document.getElementById('bg').style.setProperty('--bg',`url(../assets/fffuel/${bgname}.svg)`);
+ document.getElementById('bg').classList.toggle('hide',layer=='card');document.getElementById('brand').classList.toggle('hide',layer=='card');
+ document.getElementById('w').classList.toggle('hide',layer=='bg');return !!h};
+</script></body></html>

@@ -1,0 +1,6 @@
+{"headline":"<headline as published>","demo":false,"bg":"ggglitch",
+ "sources":[{"name":"<outlet>","lean":"left|center|right|independent|international|primary","url":"https://...","ts":1761080000,"headline":"<their headline>"}],
+ "timeline":[{"ts":1761080000,"label":"<what happened, from a source>","source":"<outlet>"}],
+ "numbers":[{"value":"<number>","label":"<what it counts>","source":"<outlet or doc>"}],
+ "claims":{"confirmed":[{"text":"<claim>","source":"<outlet/doc>"}],"unverified":[],"disputed":[]},
+ "docs":[{"title":"<primary document>","url":"https://..."}]}

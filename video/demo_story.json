@@ -1,0 +1,97 @@
+{
+ "headline": "Missiles hit Kyiv after Russia agrees to US call to resume Ukraine peace talks",
+ "demo": true,
+ "bg": "ccchaos",
+ "sources": [
+  {
+   "name": "CNN (via Google News)",
+   "lean": "left",
+   "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNNk5OZXV1WHNSTWpqUTVVQTh5UWhvVTdTYjZ3YjBIZy10VDB4b2dzNnBnN09aWEdnc2s0LUpKVExKSC0yenJHQUZROW5vZHZndmJxUmt6NUVSNUNMMDluYmRZR2M3TkNhYlRscXIzUXV0d1haeXI3WW1FTjlZdVUtSTB0TDBmTTNfdUNmZDFyUQ?oc=5",
+   "ts": 1792568237.0,
+   "headline": "Russia willing to resume trilateral peace talks in November, Kremlin says after Witkoff meeting"
+  },
+  {
+   "name": "Daily Wire",
+   "lean": "right",
+   "url": "https://www.dailywire.com/news/putin-agrees-to-three-way-peace-talks-after-meeting-with-trump-envoys",
+   "ts": 1792586676.0,
+   "headline": "Putin Agrees To Three-Way Ukraine Peace Talks After Meeting With Trump Envoys"
+  },
+  {
+   "name": "Reuters (via Google News)",
+   "lean": "center",
+   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNX2lXUVRRUFYxUk52Z1V0bVdLaWdydE8zV0ZfQnFxSEVjakhMNUZHNlVIaXBsZzdWUXkzRkhYX3gzTm9RbWFCQlRoWl80YUlyQWJrMVBQRUNxc0lCWWZQY2lmeGVyZDJMdEJQakFEVWMzd1BPNDRzdUtuMjh5Rkh2S3VfSzY0MFROT2dWRS1pU1RBaVY5UGlFMVMtTk10SXl6V0c0RThHd3czZ1JnLURhX1VwRHJPS0I5QmItbA?oc=5",
+   "ts": 1792591553.0,
+   "headline": "Russia is willing in principle to join new Ukraine peace talks in November, Kremlin says"
+  },
+  {
+   "name": "France 24",
+   "lean": "international",
+   "url": "https://www.france24.com/en/kremlin-says-ready-to-resume-3-way-talks-with-us-and-ukraine-mid-november",
+   "ts": 1792597892.0,
+   "headline": "Kremlin says 'ready' to resume 3-way talks with US and Ukraine mid-November"
+  },
+  {
+   "name": "Al Jazeera",
+   "lean": "international",
+   "url": "https://www.aljazeera.com/video/newsfeed/2026/10/21/russia-willing-to-resume-peace-talks-with-ukraine-us-after-witkoff-visit?traffic_source=rss",
+   "ts": 1792609265.0,
+   "headline": "Russia willing to resume peace talks with Ukraine, US after Witkoff visit"
+  },
+  {
+   "name": "France 24",
+   "lean": "international",
+   "url": "https://www.france24.com/en/putin-agrees-to-resume-three-way-talks-with-kyiv-and-washington",
+   "ts": 1792611172.0,
+   "headline": "Putin agrees to resume three-way talks with Kyiv and Washington"
+  },
+  {
+   "name": "BBC World",
+   "lean": "international",
+   "url": "https://www.bbc.co.uk/news/articles/cq3djn5nxx12o?at_medium=RSS&at_campaign=rss",
+   "ts": 1792618061.0,
+   "headline": "Missiles hit Kyiv after Russia agrees to US call to resume Ukraine peace talks"
+  }
+ ],
+ "timeline": [
+  {
+   "ts": 1792568237.0,
+   "label": "Russia willing to resume trilateral peace talks in November, Kremlin says after Witkoff meeting",
+   "source": "CNN (via Google News)"
+  },
+  {
+   "ts": 1792586676.0,
+   "label": "Putin Agrees To Three-Way Ukraine Peace Talks After Meeting With Trump Envoys",
+   "source": "Daily Wire"
+  },
+  {
+   "ts": 1792591553.0,
+   "label": "Russia is willing in principle to join new Ukraine peace talks in November, Kremlin says",
+   "source": "Reuters (via Google News)"
+  },
+  {
+   "ts": 1792597892.0,
+   "label": "Kremlin says 'ready' to resume 3-way talks with US and Ukraine mid-November",
+   "source": "France 24"
+  },
+  {
+   "ts": 1792609265.0,
+   "label": "Russia willing to resume peace talks with Ukraine, US after Witkoff visit",
+   "source": "Al Jazeera"
+  },
+  {
+   "ts": 1792611172.0,
+   "label": "Putin agrees to resume three-way talks with Kyiv and Washington",
+   "source": "France 24"
+  },
+  {
+   "ts": 1792618061.0,
+   "label": "Missiles hit Kyiv after Russia agrees to US call to resume Ukraine peace talks",
+   "source": "BBC World"
+  }
+ ],
+ "numbers": [],
+ "claims": {},
+ "docs": [],
+ "note": "DEMO built only from the published headlines, sources and times in the feed cluster."
+}
