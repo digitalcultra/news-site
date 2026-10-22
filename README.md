@@ -18,3 +18,16 @@ The API needs a server (feeds lack CORS): Render/Fly free web service for server
 - `infographic.js` / `infographic.css`: 6 data-driven templates (`DCNInfo.title|coverage|timeline|numbers|claims|receipts`). Empty data = card hidden; nothing is invented.
 - Story page: "Infographic" panel built from the real cluster (`DCNInfo.fromCluster`): coverage, timeline (headline times), receipts. Numbers/claims only appear if added to the story JSON.
 - Video: `python3 video/render.py my_story.json [--name x] [--secs 5]` -> `video/out/x.mp4` (1080x1920, ~24s, 30fps) + `video/out/x_stills/*.png`. Schema: `video/story_template.json`. Demo: `video/demo_story.json`.
+
+## Email (Brevo): daily digest + Insider alerts
+Code: `mailer.py` (stdlib only). Everything is a no-op unless `BREVO_API_KEY` is set.
+
+Render env vars: `BREVO_API_KEY`, `SENDER_EMAIL`, `SENDER_NAME` (set), `TICK_TOKEN` (random string, recommended), optional `ORG_ADDRESS` (mailing address shown in the email footer; required by US email law; set it only in Render env, never in code).
+
+- **Signup** (`POST /api/signup`): saved to `signups.json` (fallback, wiped on Render restarts) and upserted as a Brevo contact (attributes CITY/STATE, list **Daily Local**, created automatically). "Chicago, IL" style city input is split into CITY/STATE.
+- **Daily digest**: after 7 AM America/Chicago, "Top buried stories near you" goes to Daily Local contacts (max 250/day for the free tier). Each contact gets a `DC_LAST` attribute so restarts never cause duplicates. Real feed stories only, linking to `/story/<id>` pages.
+- **Insider alerts**: every 15 min, contacts in the **Insider** list get an email when a new (under 6h), high-score (>=2) story matches their state/city. Deduped per story per contact, max 3/day (tracked in the `DC_ALERTS` attribute).
+- **Add an Insider member manually** (until Payhip webhooks are wired): Brevo → Contacts → find/add the member's email → set CITY and STATE (2-letter) → "Add to list" → **Insider**. The Insider list appears after the first signup or tick; you can also create it by hand with that exact name.
+- **Unsubscribe**: every email links to `/api/unsubscribe?e=..&t=..` (HMAC token), which blocklists the contact in Brevo. A `List-Unsubscribe` header is sent too.
+- **Keep-alive cron (required on free Render)**: the free instance sleeps, so the background thread stops. Create a free job at cron-job.org hitting `https://digitalcultra-news.onrender.com/api/tick?token=YOUR_TICK_TOKEN` every 15 minutes. `/api/tick` runs whatever is due and is safe to call often.
+- Tests: `python3 -m unittest tests.test_mailer`.

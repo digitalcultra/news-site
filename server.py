@@ -90,12 +90,27 @@ class H(http.server.SimpleHTTPRequestHandler):
             k=pa[9:]; return self.out(seo.listing(SECT[k]+' | '+seo.SITE_NAME,SECT[k]+' from every side, with coverage labels and links to the original outlets.',pa,[s for s in seo_stories() if seo.section(s)==k]),'text/html')
         if pa.startswith('/story/'):
             m=next((s for s in seo_stories() if seo.sid(s)==pa[7:]),None)
+            if not m: m=mailer.STORY_CACHE.get(pa[7:])
             return self.out(seo.story_page(m),'text/html') if m else self.out(seo.page('Not found','Story expired.','/404','<h1>Story no longer in feed</h1>'),'text/html',404)
+        if pa=='/api/tick': return self.tick(p)
+        if pa=='/api/unsubscribe':
+            q=urllib.parse.parse_qs(p.query)
+            try: ok=mailer.unsubscribe(q.get('e',[''])[0][:120],q.get('t',[''])[0][:64])
+            except Exception: ok=False
+            return self.out(seo.page('Unsubscribe','Email preferences','/api/unsubscribe','<h1>%s</h1><p><a href="/">Back to the news</a></p>'%('You are unsubscribed.' if ok else 'That unsubscribe link is invalid or expired.')),'text/html')
         if p.path!='/api/news': return super().do_GET()
         q=urllib.parse.parse_qs(p.query); st=q.get('state',['IL'])[0][:2].upper(); ci=re.sub('[^A-Za-z .-]','',q.get('city',[''])[0])[:40]
         b=json.dumps(news(st,ci)).encode()
         self.send_response(200); self.send_header('Content-Type','application/json'); self.end_headers(); self.wfile.write(b)
+    def tick(self,p):
+        try:
+            tok=os.environ.get('TICK_TOKEN','')
+            given=urllib.parse.parse_qs(p.query).get('token',[''])[0] or self.headers.get('X-Tick-Token','')
+            if tok and given!=tok: return self.out('{"ok":false}','application/json',403)
+            return self.out(json.dumps(mailer.tick()),'application/json')
+        except Exception: return self.out('{"ok":false}','application/json',500)
     def do_POST(self):
+        if urllib.parse.urlparse(self.path).path=='/api/tick': return self.tick(urllib.parse.urlparse(self.path))
         if urllib.parse.urlparse(self.path).path!='/api/signup': return self.out('{"ok":false}','application/json',404)
         try:
             n=min(int(self.headers.get('Content-Length',0)),2000); d=json.loads(self.rfile.read(n) or b'{}')
@@ -105,9 +120,13 @@ class H(http.server.SimpleHTTPRequestHandler):
                 try: L=json.load(open(SIGFILE))
                 except Exception: L=[]
                 if not any(x['email'].lower()==em.lower() for x in L): L.append({'email':em,'city':ci,'t':int(time.time())})
-                json.dump(L,open(SIGFILE,'w'))
+                try: json.dump(L,open(SIGFILE,'w'))
+                except Exception: pass
+            try: mailer.upsert_contact(em,ci,str(d.get('state',''))[:2])
+            except Exception: pass
             return self.out('{"ok":true}','application/json')
         except Exception: return self.out('{"ok":false}','application/json',400)
     def log_message(self,*a):pass
-import os
+import os,mailer
+mailer.start(news)
 http.server.ThreadingHTTPServer(('0.0.0.0',int(os.environ.get('PORT','8795'))),H).serve_forever()
