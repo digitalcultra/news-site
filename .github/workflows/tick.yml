@@ -1,0 +1,10 @@
+name: tick
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -fsS --max-time 120 "https://digitalcultra-news.onrender.com/api/tick?token=${{ secrets.TICK_TOKEN }}" || true
