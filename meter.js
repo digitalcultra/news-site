@@ -4,6 +4,7 @@
   var M=window.MEMBERSHIP_LINKS||{monthly:'https://payhip.com/order?link=rx0Sb&pricing_plan=63Wd1yX9zw',yearly:'https://payhip.com/order?link=rx0Sb&pricing_plan=ZwzKa405G9'};
   function get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
   function set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  if(/(^|; )dcn_owner=1/.test(document.cookie)){set('dcn_member','1');var ob=document.createElement('div');ob.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9998;background:#3b2a00;color:#ffd166;border:1px solid #ffd166;border-radius:20px;padding:6px 12px;font:13px system-ui';ob.innerHTML='Owner preview \u00b7 member view \u00b7 <a style="color:#fff" href="/preview?exit=1">Exit</a>';document.body.appendChild(ob);return}
   var isStory=/^\/story\//.test(location.pathname);
   var seen=get(K)||[];
   if(isStory&&seen.indexOf(location.pathname)<0){seen.push(location.pathname);set(K,seen)}

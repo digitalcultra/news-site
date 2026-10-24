@@ -92,6 +92,7 @@ class H(http.server.SimpleHTTPRequestHandler):
             m=next((s for s in seo_stories() if seo.sid(s)==pa[7:]),None)
             if not m: m=mailer.STORY_CACHE.get(pa[7:])
             return self.out(seo.story_page(m),'text/html') if m else self.out(seo.page('Not found','Story expired.','/404','<h1>Story no longer in feed</h1>'),'text/html',404)
+        if pa=='/preview': return self.preview(p)
         if pa=='/api/tick': return self.tick(p)
         if pa=='/api/unsubscribe':
             q=urllib.parse.parse_qs(p.query)
@@ -102,6 +103,19 @@ class H(http.server.SimpleHTTPRequestHandler):
         q=urllib.parse.parse_qs(p.query); st=q.get('state',['IL'])[0][:2].upper(); ci=re.sub('[^A-Za-z .-]','',q.get('city',[''])[0])[:40]
         b=json.dumps(news(st,ci)).encode()
         self.send_response(200); self.send_header('Content-Type','application/json'); self.end_headers(); self.wfile.write(b)
+    def preview(self,p):
+        import hashlib,hmac
+        q=urllib.parse.parse_qs(p.query); want=os.environ.get('OWNER_PREVIEW_SHA256','267d786772529a79a708fc50560c9bf7c0dcd72a52d2d80fabcb1945da461a83')
+        if 'exit' in q:
+            ck='dcn_owner=; Path=/; Max-Age=0; SameSite=Lax; Secure'; js="localStorage.removeItem('dcn_member');location.replace('/')"
+        elif hmac.compare_digest(hashlib.sha256(q.get('key',[''])[0].encode()).hexdigest(),want):
+            ck='dcn_owner=1; Path=/; Max-Age=31536000; SameSite=Lax; Secure'; js="localStorage.setItem('dcn_member','1');location.replace('/')"
+        else:
+            ck=None; js=None
+        b=('<!doctype html><meta name="robots" content="noindex,nofollow"><title>Preview</title><script>%s</script>'%js if js else '<!doctype html><meta name="robots" content="noindex,nofollow"><h1>Not found</h1>').encode()
+        self.send_response(200 if js else 404); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Cache-Control','no-store'); self.send_header('X-Robots-Tag','noindex, nofollow'); self.send_header('Referrer-Policy','no-referrer')
+        if ck: self.send_header('Set-Cookie',ck)
+        self.end_headers(); self.wfile.write(b)
     def tick(self,p):
         try:
             tok=os.environ.get('TICK_TOKEN','')
