@@ -22,7 +22,7 @@ def page(title,desc,path,body,lds=(),ogtype='website'):
       f'<link rel="alternate" type="application/rss+xml" title="{E(SITE_NAME)}" href="{SITE_URL}/feed.xml">'
       '<style>body{font:16px/1.5 system-ui,sans-serif;max-width:760px;margin:auto;padding:12px;background:#0b0d12;color:#e8e8ee}a{color:#7cc4ff}.m{color:#9aa}.b{display:inline-block;border:1px solid #445;border-radius:9px;padding:1px 8px;margin:2px;font-size:13px}nav a{margin-right:12px}</style>'
       + ''.join(ld(x) for x in lds) +
-      f'</head><body><nav><a href="/">{E(SITE_NAME)}</a><a href="/section/local">Local</a><a href="/section/national">National</a><a href="/section/world">World</a><a href="/about">About</a></nav><main>{body}</main>'
+      f'</head><body><nav><a href="/">{E(SITE_NAME)}</a><a href="/section/local">Local</a><a href="/section/national">National</a><a href="/section/world">World</a><a href="/crime-court">Crime &amp; Court</a><a href="/buried-blind">Buried &amp; Blind</a><a href="/sports">Sports</a><a href="/about">About</a></nav><main>{body}</main>'
       '<footer class="m"><p><a href="/about">About</a> · <a href="/contact">Contact</a> · <a href="/editorial-policy">Editorial policy</a> · <a href="/feed.xml">RSS</a></p></footer><script src="/meter.js" defer></script></body></html>')
 def summary(s):
     lv=', '.join(f'{k}: {v}' for k,v in sorted(s['leans'].items()))
@@ -55,7 +55,7 @@ def static(k):
 def robots(): return f"User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: {SITE_URL}/sitemap.xml\nSitemap: {SITE_URL}/news-sitemap.xml\n"
 X=lambda s:html.escape(s,quote=True)
 def sitemap(stories):
-    u=['/','/section/local','/section/national','/section/world','/about','/contact','/editorial-policy']
+    u=['/','/section/local','/section/national','/section/world','/about','/contact','/editorial-policy','/crime-court','/buried-blind','/sports']
     rows=''.join(f'<url><loc>{SITE_URL}{p}</loc></url>' for p in u)+''.join(f'<url><loc>{SITE_URL}/story/{sid(s)}</loc><lastmod>{iso(s["last"])}</lastmod></url>' for s in stories)
     return '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+rows+'</urlset>'
 def news_sitemap(stories):

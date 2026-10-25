@@ -23,8 +23,10 @@ def fetch(src):
                 except Exception:
                     try: import datetime; ts=datetime.datetime.fromisoformat(d.text.strip().replace('Z','+00:00')).timestamp()
                     except Exception: pass
-            if 'news.google.com' in u: title=re.sub(r'\s+-\s+[^-]+$','',title)
-            if title and link: items.append({'t':title,'u':link,'ts':ts or time.time(),'s':src[0],'lean':src[1],'scope':src[2]})
+            orig=None
+            if 'news.google.com' in u:
+                m=re.search(r'\s+-\s+([^-]+)$',title); orig=m.group(1).strip() if m else None; title=re.sub(r'\s+-\s+[^-]+$','',title)
+            if title and link: items.append({'t':title,'u':link,'ts':ts or time.time(),'s':src[0],'lean':src[1],'scope':src[2],**({'orig':orig} if orig else {})})
             if len(items)>=40:break
     except Exception as e: items=None
     CACHE[u]=(time.time(),items); return items
@@ -68,7 +70,7 @@ def news(state,city):
     seen=set(); items=[i for i in items if not ((i['s'],i['t']) in seen or seen.add((i['s'],i['t'])))]
     cutoff=time.time()-5*86400; items=[i for i in items if i['ts']>cutoff]
     return {'feeds_total':len(srcs),'feeds_ok':ok,'failed':failed,'sources':[{'name':s[0],'lean':s[1],'scope':s[2]} for s in srcs],'stories':cluster(items),'generated':time.time()}
-import seo
+import seo, sections
 SEOC=[0,None]
 def seo_stories():
     if time.time()-SEOC[0]>600: SEOC[1]=sorted(news('IL','Chicago')['stories'],key=lambda s:(-s['score'],-s['last'])); SEOC[0]=time.time()
@@ -92,6 +94,12 @@ class H(http.server.SimpleHTTPRequestHandler):
             m=next((s for s in seo_stories() if seo.sid(s)==pa[7:]),None)
             if not m: m=mailer.STORY_CACHE.get(pa[7:])
             return self.out(seo.story_page(m),'text/html') if m else self.out(seo.page('Not found','Story expired.','/404','<h1>Story no longer in feed</h1>'),'text/html',404)
+        if pa.strip('/') in sections.SECTIONS or (pa.startswith('/section/') and pa[9:] in sections.SECTIONS):
+            k=pa.strip('/').split('/')[-1]; return self.out(sections.render(k,sections.items(k,fetch),seo),'text/html')
+        if pa=='/api/section':
+            k=urllib.parse.parse_qs(p.query).get('k',[''])[0]
+            if k not in sections.SECTIONS: return self.out('{"ok":false}','application/json',404)
+            return self.out(json.dumps(sections.items(k,fetch)),'application/json')
         if pa=='/preview': return self.preview(p)
         if pa=='/api/tick': return self.tick(p)
         if pa=='/api/unsubscribe':
