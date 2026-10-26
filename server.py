@@ -112,14 +112,19 @@ class H(http.server.SimpleHTTPRequestHandler):
         b=json.dumps(news(st,ci)).encode()
         self.send_response(200); self.send_header('Content-Type','application/json'); self.end_headers(); self.wfile.write(b)
     def preview(self,p):
-        import hashlib,hmac
-        q=urllib.parse.parse_qs(p.query); want=os.environ.get('OWNER_PREVIEW_SHA256','267d786772529a79a708fc50560c9bf7c0dcd72a52d2d80fabcb1945da461a83')
+        import hashlib,hmac,time
+        q=urllib.parse.parse_qs(p.query); want=os.environ.get('OWNER_CODE_SHA256','92cd08c9d375ac14f3d761a264c0d58b7da34e168074b2cad5026ebad8004b1c')
+        ip=(self.headers.get('X-Forwarded-For') or self.client_address[0]).split(',')[0].strip(); now=time.time()
+        F=globals().setdefault('_PVFAIL',{})
+        F[ip]=[t for t in F.get(ip,[]) if now-t<900]
+        code=(q.get('k') or q.get('key') or [''])[0].strip().lower()
         if 'exit' in q:
             ck='dcn_owner=; Path=/; Max-Age=0; SameSite=Lax; Secure'; js="localStorage.removeItem('dcn_member');location.replace('/')"
-        elif hmac.compare_digest(hashlib.sha256(q.get('key',[''])[0].encode()).hexdigest(),want):
+        elif len(F[ip])<10 and code and hmac.compare_digest(hashlib.sha256(code.encode()).hexdigest(),want):
             ck='dcn_owner=1; Path=/; Max-Age=31536000; SameSite=Lax; Secure'; js="localStorage.setItem('dcn_member','1');location.replace('/')"
         else:
             ck=None; js=None
+            if code: F[ip].append(now)
         b=('<!doctype html><meta name="robots" content="noindex,nofollow"><title>Preview</title><script>%s</script>'%js if js else '<!doctype html><meta name="robots" content="noindex,nofollow"><h1>Not found</h1>').encode()
         self.send_response(200 if js else 404); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Cache-Control','no-store'); self.send_header('X-Robots-Tag','noindex, nofollow'); self.send_header('Referrer-Policy','no-referrer')
         if ck: self.send_header('Set-Cookie',ck)
