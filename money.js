@@ -6,7 +6,6 @@ try{const p=JSON.parse(localStorage.getItem('dcn_profile')||'null'); if(p&&p.sta
 renderPlans($('#planbox'),{mo:'$4',yr:'$36',save:'save 25%',
  free:['Headlines from every side','Local, national & world feeds','Top 3 underreported stories'],
  pro:['Full Underreported section','Daily “what they buried” email digest','Location alerts for your city/state','No ads']});
-if($('#guides')) renderGuidesTop($('#guides'), st);
 renderGear($('#gear'),true, st);
 renderStore($('#store1'),'Family Emergency Kits for all 50 states, survival guides & planners — instant PDF checkout.');
 renderStore($('#store2'),'State kits, survival guides & planners.');

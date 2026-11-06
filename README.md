@@ -10,7 +10,7 @@ The API needs a server (feeds lack CORS): Render/Fly free web service for server
 
 ## Monetization (config.js)
 - `MEMBERSHIP_LINKS` – **TODO**: paste real Payhip membership checkout URLs ($4/mo, $36/yr).
-- `PAYHIP` / `STATE_KITS` – Digital Cultra Payhip product links (guides + verified state emergency kits). Featured strip sits at the top of the app; sidebar cards use the same Payhip checkouts. Membership stays on `rx0Sb` ($4/mo, $36/yr). Unknown state kits fall back to https://payhip.com/DigitalCultra (never invent `/b/` slugs).
+- `PAYHIP` / `STATE_KITS` – Digital Cultra Payhip product links (guides + verified state emergency kits). Listed in the Guides & Emergency Kits product section (#gear), with Reset Years + the reader state kit first, then other Payhip guides. Membership stays on `rx0Sb` ($4/mo, $36/yr). Unknown state kits fall back to https://payhip.com/DigitalCultra (never invent `/b/` slugs).
 - Member gating is a client-side flag (`localStorage.dcn_member = '1'`) for demo only. Real gating needs a backend: verify Payhip membership (webhook / license key), issue a session, and serve the full Underreported list + digest only to verified members.
 - Newsletter box stores emails in `localStorage.dcn_newsletter` (this device only). **TODO (Beehiiv)**: create a free Beehiiv publication, copy Settings > Embed (subscribe form) and replace the `<form id="nl">` in index.html with the embed `<iframe>`, or POST to Beehiiv's subscriptions API from the server (API key must stay server-side).
 

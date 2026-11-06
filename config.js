@@ -40,8 +40,8 @@ window.stateKit = function(st){
   return {name:label, icon:"🛡️", note:"All 50 state kits live in the Digital Cultra store.", url:window.STORE_URL, price:"$5", matched:false};
 };
 
-// Featured strip + sidebar cards (Payhip digital products).
-window.GUIDES_FEATURED = ["resetYears","stateKit","debtFree","getHired","mealPlan","focus"];
+// Product listings order for #gear (survival/emergency guides first).
+window.GUIDES_FEATURED = ["resetYears","stateKit","debtFree","bookkeeping","getHired","caregiver","mealPlan","focus","homeschool","fitness","wedding","kindergarten"];
 window.AFFILIATE = null; // legacy Amazon affiliate removed — money goes to Payhip checkouts
 window.FTC_DISCLOSURE = "Digital downloads sold by Digital Cultra on Payhip. Instant PDF delivery after checkout.";
 window.MEMBER_KEY = "dcn_member";
