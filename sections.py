@@ -44,7 +44,7 @@ SECTIONS={
    ('Google News: world court cases','aggregator','world',GN+'(court+OR+trial+OR+sentenced)+world+when:3d','legal'),
   ]},
 }
-CTA='<div class="b" style="display:block;padding:12px;margin:18px 0;border-color:#e5484d"><b>Subscribe to Digital Cultra News for more stories like this.</b> <a href="/#membership">Join here</a></div>'
+CTA='<div class="b" style="display:block;padding:12px;margin:18px 0;border-color:#e5484d"><b>Subscribe to Digital Cultra News for more stories like this.</b> <a href="/#membership">Join Insider</a> · <a href="https://payhip.com/DigitalCultra" rel="noopener" target="_blank">Guides &amp; State Kits</a></div>'
 NOTE={'buried-blind':'<p class="m"><b>About blind items:</b> blind items are unverified gossip. We republish only the headline exactly as the original outlet published it, credit and link that outlet, and <b>never guess or add who an item is about</b>. Court and legal items describe allegations unless a court has ruled; everyone is presumed innocent until proven guilty.</p>',
  'sports':'<p class="m">Legal items describe allegations unless a court has ruled. Every headline links to its original outlet.</p>',
  'crime-court':'<p class="m">Charges and lawsuits are allegations until proven in court. Every headline links to its original outlet or court record.</p>'}

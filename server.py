@@ -70,6 +70,45 @@ def news(state,city):
     seen=set(); items=[i for i in items if not ((i['s'],i['t']) in seen or seen.add((i['s'],i['t'])))]
     cutoff=time.time()-5*86400; items=[i for i in items if i['ts']>cutoff]
     return {'feeds_total':len(srcs),'feeds_ok':ok,'failed':failed,'sources':[{'name':s[0],'lean':s[1],'scope':s[2]} for s in srcs],'stories':cluster(items),'generated':time.time()}
+WCACHE={}
+def world_search(qraw):
+    """Worldwide buried-news search across global feeds + Google News RSS. 10-min cache."""
+    q=re.sub(r"[^A-Za-z0-9 \-.,'’\"]+"," ", (qraw or "")).strip()[:100]
+    q=" ".join(q.split())
+    if not q:
+        return {'query':'','stories':[],'feeds_ok':0,'feeds_total':0,'generated':time.time()}
+    key=q.lower()
+    hit=WCACHE.get(key)
+    if hit and time.time()-hit[0]<600:
+        return hit[1]
+    srcs=[s for s in SOURCES if not s[2].startswith('local:')]
+    qq=urllib.parse.quote_plus(q)
+    extras=[
+        ('Google News: query','aggregator','world','https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q=%s+when:14d'%qq),
+        ('Google News: world/intl','aggregator','world','https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q=%s+(world+OR+international+OR+global)+when:14d'%qq),
+        ('Google News: conflict desks','aggregator','world','https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q=%s+(war+OR+conflict+OR+strike+OR+airstrike+OR+refugees)+when:14d'%qq),
+        ('Google News: major wires','aggregator','world','https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q=%s+(Reuters+OR+AFP+OR+%%22Al+Jazeera%%22+OR+BBC)+when:14d'%qq),
+    ]
+    srcs=srcs+extras
+    ok=0; items=[]; failed=[]
+    with cf.ThreadPoolExecutor(24) as ex:
+        for s,r in zip(srcs,ex.map(fetch,srcs)):
+            if r: ok+=1; items+=r
+            else: failed.append(s[0])
+    seen=set(); items=[i for i in items if not ((i['s'],i['t']) in seen or seen.add((i['s'],i['t'])))]
+    cutoff=time.time()-14*86400; items=[i for i in items if i['ts']>cutoff]
+    words=[w for w in re.findall(r"[a-z0-9']+", key) if len(w)>2]
+    stories=cluster(items)
+    if words:
+        def match(s):
+            blob=(' '+s['title']+' '+' '.join(i['t'] for i in s['items'])).lower()
+            hits=sum(1 for w in words if w in blob)
+            return hits>=max(1,(len(words)+1)//2)
+        stories=[s for s in stories if match(s)]
+    stories.sort(key=lambda s:(-s['score'],-s['last']))
+    out={'query':q,'stories':stories[:60],'feeds_ok':ok,'feeds_total':len(srcs),'failed':failed[:20],'generated':time.time()}
+    WCACHE[key]=(time.time(),out)
+    return out
 import seo, sections
 SEOC=[0,None]
 def seo_stories():
@@ -107,6 +146,10 @@ class H(http.server.SimpleHTTPRequestHandler):
             try: ok=mailer.unsubscribe(q.get('e',[''])[0][:120],q.get('t',[''])[0][:64])
             except Exception: ok=False
             return self.out(seo.page('Unsubscribe','Email preferences','/api/unsubscribe','<h1>%s</h1><p><a href="/">Back to the news</a></p>'%('You are unsubscribed.' if ok else 'That unsubscribe link is invalid or expired.')),'text/html')
+        if pa=='/api/world-search':
+            q=urllib.parse.parse_qs(p.query); qq=(q.get('q') or q.get('query') or [''])[0][:100]
+            b=json.dumps(world_search(qq)).encode()
+            self.send_response(200); self.send_header('Content-Type','application/json'); self.send_header('Cache-Control','public, max-age=60'); self.end_headers(); self.wfile.write(b); return
         if p.path!='/api/news': return super().do_GET()
         q=urllib.parse.parse_qs(p.query); st=q.get('state',['IL'])[0][:2].upper(); ci=re.sub('[^A-Za-z .-]','',q.get('city',[''])[0])[:40]
         b=json.dumps(news(st,ci)).encode()

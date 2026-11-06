@@ -11,8 +11,11 @@
 <label>State<select id="stt"></select></label><label>City<input id="ci" placeholder="Chicago" value="Chicago"></label>
 <button class="btn">Start reading</button></form><p class="tiny muted">Stored on this device only for now.</p></section>
 <section id="app" class="hidden dash">
-<div class="tools"><input id="q" placeholder="Search headlines…"><div id="topics" class="chips"></div></div>
+<div id="guides"></div>
+<div class="tools"><input id="q" placeholder="Search headlines or a country, city, conflict…"><button type="button" id="worldbtn" class="chip" style="background:#1f6feb;border-color:#1f6feb">🌍 Search Worldwide</button><div id="topics" class="chips"></div></div>
+<div id="worldchips" class="chips" style="padding-top:0"></div>
 <div id="stat" class="tiny muted"></div>
+<div id="worldbox" class="hidden"><h2 class="sec u">🌍 Worldwide Search Results</h2><p id="worldmeta" class="tiny muted"></p><div id="world" class="row"></div><button type="button" id="worldclear" class="chip" style="margin:6px 0 12px">Clear worldwide search</button></div>
 <h2 class="sec u"><img class="ic" src="assets/icons/underreported.svg" width="22" height="22" alt=""> Underreported</h2><p class="tiny muted">Ranked by rules only: few outlets, one side only, primary documents with little media pickup, or coverage that stopped quickly.</p><div id="under" class="row"></div><div id="ulock" class="mz-lock hidden"><img class="ic" src="assets/icons/membership.svg" width="16" height="16" alt=""> Free shows the top 3. <b>Members get the full Underreported section</b> + the daily “what they buried” email. <a href="#membership" style="color:#f0b429">See membership →</a></div>
 <div id="store1"></div><h2 class="sec"><img class="ic" src="assets/icons/local.svg" width="22" height="22" alt=""> Local · <span id="lname"></span></h2><div id="local"></div>
 <h2 class="sec"><img class="ic" src="assets/icons/national.svg" width="22" height="22" alt=""> National</h2><div id="national"></div>
@@ -20,7 +23,7 @@
 <h2 class="sec"><img class="ic" src="assets/icons/primary.svg" width="22" height="22" alt=""> Primary documents</h2><div id="primary"></div>
 <aside id="side" class="bgd"><h2 class="sec"><img class="ic" src="assets/icons/share.svg" width="22" height="22" alt=""> Get the daily digest</h2><div class="card"><b>“What they buried” — daily email</b><p class="tiny muted">The underreported stories, every morning. Free.</p>
 <form id="nl"><input type="email" id="nlem" required placeholder="you@example.com"><button class="btn">Subscribe</button></form><p id="nlmsg" class="tiny muted"></p></div>
-<h2 class="sec"><img class="ic" src="assets/icons/kit.svg" width="22" height="22" alt=""> Prep gear</h2><div id="gear"></div><div id="store2"></div></aside>
+<h2 class="sec"><img class="ic" src="assets/icons/kit.svg" width="22" height="22" alt=""> Emergency &amp; Readiness Guides</h2><div id="gear"></div><div id="store2"></div></aside>
 <p class="tiny muted foot">Digital Cultra News links to original publishers. Leaning tags are approximate labels for outlets, not for stories. Graphics: <a href="https://www.fffuel.co/" target="_blank" rel="noopener" style="color:#8b949e">fffuel.co</a></p>
 </section><section id="plans" class="hidden bgp"><h1><img class="ic" src="assets/icons/membership.svg" width="30" height="30" alt=""> Membership</h1><p class="muted">Keep independent, every-side news running. Cancel anytime.</p><div id="planbox"></div>
 <div id="store3"></div><p><a href="#" class="chip" style="text-decoration:none">← Back to news</a></p></section></main>

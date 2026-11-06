@@ -21,13 +21,52 @@ function render(){if(!D)return;const S=D.stories.map((s,i)=>(s.i=i,s)).filter(ma
 function open(i){if(window.DCNMeter&&!DCNMeter.allow('m:'+D.stories[i].title))return;const s=D.stories[i],[b,ic]=theme(s);$('.sheet').style.setProperty('--sbg',`url(assets/fffuel/${b}.svg)`);$('#mbody').innerHTML=`<div class="skick">${IC(ic,22)} ${ic}</div>${status(s)}<h2>${esc(s.title)}</h2>${bar(s)}<div class="legend">${LE.map(l=>`<span><i class="l-${l}"></i>${l}</span>`).join('')}</div>
  <p class="meta">Covered by ${s.n} source(s) (${lcr(s)}). First seen ${ago(s.first)}, last ${ago(s.last)}.</p>${s.why.length?`<p class="why">Why it's flagged: ${s.why.join(' · ')}</p>`:''}
  <h3 class="sec">${IC('news',18)} Infographic</h3>${DCNInfo.panel(DCNInfo.fromCluster(s,b),{order:['coverage','timeline','numbers','claims','receipts']})}<h3 class="sec">Headlines as published</h3>${s.items.map(it=>`<a class="src" href="${esc(it.u)}" target="_blank" rel="noopener"><span class="st" style="background:#21262d">${it.lean}</span> <b>${esc(it.s)}</b> · <span class="meta">${ago(it.ts)}</span><br>${esc(it.t)} ↗</a>`).join('')}`;$('#modal').classList.remove('hidden')}
-async function load(){const p=Store.get();$('#loc').innerHTML=IC('local',14)+' '+(p.city?p.city+', ':'')+p.state;$('#lname').textContent=(p.city||'')+' '+p.state;$('#stat').textContent='Loading feeds…';
+async function load(){const p=Store.get();$('#loc').innerHTML=IC('local',14)+' '+(p.city?p.city+', ':'')+p.state;$('#lname').textContent=(p.city||'')+' '+p.state;if(window.renderGuidesTop&&$('#guides'))renderGuidesTop($('#guides'),p.state);if(window.renderGear&&$('#gear'))renderGear($('#gear'),true,p.state);$('#stat').textContent='Loading feeds…';
  D=await (await fetch(`/api/news?state=${p.state}&city=${encodeURIComponent(p.city)}`)).json();$('#stat').textContent=`${D.feeds_ok}/${D.feeds_total} feeds loaded · ${D.stories.length} stories · updated ${new Date(D.generated*1e3).toLocaleTimeString()}`;render()}
 function start(){const p=Store.get();$('#onb').classList.toggle('hidden',!!p);$('#app').classList.toggle('hidden',!p);$('#loc').classList.toggle('hidden',!p);if(p)load()}
 $('#stt').innerHTML=ST.map(s=>`<option value="${s}" ${s=='IL'?'selected':''}>${s}</option>`).join('');
 $('#f').onsubmit=e=>{e.preventDefault();Store.set({email:$('#em').value,country:$('#co').value,state:$('#stt').value,city:$('#ci').value.trim()});start()};
 $('#loc').onclick=()=>{Store.clear();start()};$('#topics').innerHTML=Object.keys(TOPICS).map(t=>`<button class="chip ${t=='All'?'on':''}" data-t="${t}">${TI[t]?IC(TI[t],14)+' ':''}${t}</button>`).join('');
 $('#topics').onclick=e=>{const bt=e.target.closest('button');if(!bt)return;e={target:bt};topic=e.target.dataset.t;[...$('#topics').children].forEach(b=>b.classList.toggle('on',b==e.target));render()};
-$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};document.body.onclick=e=>{const c=e.target.closest('.story');if(c){e.preventDefault();open(+c.dataset.i)}};
+$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
+document.body.onclick=e=>{const c=e.target.closest('.story');if(c){e.preventDefault();open(+c.dataset.i)}};
 $('#x').onclick=()=>$('#modal').classList.add('hidden');$('#modal').onclick=e=>{if(e.target.id=='modal')$('#modal').classList.add('hidden')};
+
+// Worldwide Buried-News Search (Enter + button + region chips). Local filter still runs live via #q.
+let W=null, worldMode=false;
+const WORLD_CHIPS=[['Ukraine','ukraine war'],['Sudan','sudan war shelter'],['Gaza','gaza israel'],['Myanmar','myanmar airstrike'],['Houthi','houthi red sea'],['Taiwan','taiwan china'],['Sahel','sahel conflict'],['Venezuela','venezuela crisis']];
+$('#worldchips').innerHTML=WORLD_CHIPS.map(([lab,qv])=>`<button type="button" class="chip" data-wq="${qv}">${lab}</button>`).join('');
+function clearWorld(){worldMode=false;W=null;$('#worldbox').classList.add('hidden');$('#world').innerHTML='';$('#worldmeta').textContent='';$('#stat').textContent=D?`${D.feeds_ok}/${D.feeds_total} feeds loaded · ${D.stories.length} stories · updated ${new Date(D.generated*1e3).toLocaleTimeString()}`:$('#stat').textContent}
+async function worldSearch(raw){
+  const query=(raw||$('#q').value||'').trim(); if(!query){clearWorld();return}
+  worldMode=true; $('#worldbox').classList.remove('hidden'); $('#worldmeta').textContent='Searching worldwide feeds…'; $('#world').innerHTML='<p class="muted tiny">Loading buried matches…</p>';
+  try{
+    W=await (await fetch('/api/world-search?q='+encodeURIComponent(query))).json();
+    const S=(W.stories||[]).map((s,i)=>(s.i='w'+i,s));
+    const buried=S.filter(s=>s.score>=2), rest=S.filter(s=>s.score<2);
+    const ordered=[...buried,...rest];
+    $('#worldmeta').textContent=`Worldwide: “${W.query}” · ${W.feeds_ok||0} feeds · ${ordered.length} stories · buried/underreported first`;
+    $('#world').innerHTML=ordered.length?ordered.slice(0,24).map((s,i)=>{s._wi=i;return card(s,'w'+i).replace('data-i="w'+i+'"','data-i="w'+i+'" data-world="1"')}).join(''):'<p class="muted tiny">No worldwide matches yet. Try a country, city, or conflict keyword.</p>';
+    $('#stat').textContent=$('#worldmeta').textContent;
+  }catch(err){ $('#worldmeta').textContent='Worldwide search failed. Try again.'; $('#world').innerHTML='';}
+}
+$('#worldbtn').onclick=()=>worldSearch();
+$('#worldclear').onclick=()=>clearWorld();
+$('#worldchips').onclick=e=>{const bt=e.target.closest('button[data-wq]'); if(!bt)return; $('#q').value=bt.dataset.wq; q=bt.dataset.wq.toLowerCase(); render(); worldSearch(bt.dataset.wq)};
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();worldSearch()}});
+// Open world cards from W instead of D
+const _open=open; open=function(i){
+  if(typeof i==='string' && String(i).startsWith('w') && W){
+    const idx=+String(i).slice(1); const s=W.stories[idx]; if(!s)return;
+    if(window.DCNMeter&&!DCNMeter.allow('m:'+s.title))return;
+    const[b,ic]=theme(s);$('.sheet').style.setProperty('--sbg',`url(assets/fffuel/${b}.svg)`);
+    $('#mbody').innerHTML=`<div class="skick">${IC(ic,22)} ${ic}</div>${status(s)}<h2>${esc(s.title)}</h2>${bar(s)}<div class="legend">${LE.map(l=>`<span><i class="l-${l}"></i>${l}</span>`).join('')}</div>
+ <p class="meta">Covered by ${s.n} source(s) (${lcr(s)}). First seen ${ago(s.first)}, last ${ago(s.last)}.</p>${s.why.length?`<p class="why">Why it's flagged: ${s.why.join(' · ')}</p>`:''}
+ <h3 class="sec">${IC('news',18)} Infographic</h3>${DCNInfo.panel(DCNInfo.fromCluster(s,b),{order:['coverage','timeline','numbers','claims','receipts']})}<h3 class="sec">Headlines as published</h3>${s.items.map(it=>`<a class="src" href="${esc(it.u)}" target="_blank" rel="noopener"><span class="st" style="background:#21262d">${it.lean}</span> <b>${esc(it.s)}</b> · <span class="meta">${ago(it.ts)}</span><br>${esc(it.t)} ↗</a>`).join('')}`;
+    $('#modal').classList.remove('hidden'); return;
+  }
+  return _open(i);
+};
+document.body.addEventListener('click',e=>{const c=e.target.closest('.story[data-world]'); if(!c)return; e.preventDefault(); e.stopPropagation(); open(c.dataset.i);}, true);
+
 start();setInterval(()=>Store.get()&&load(),10*60e3);

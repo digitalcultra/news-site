@@ -1,4 +1,4 @@
-// Monetization UI: pricing cards, prep gear, store promo, newsletter. Config lives in config.js.
+// Monetization UI: pricing cards, Payhip guides, store promo. Config lives in config.js.
 (function(){
 const C=window, $=s=>document.querySelector(s);
 const css=`.mz-plans{display:grid;gap:12px}@media(min-width:700px){.mz-plans{grid-template-columns:1fr 1fr}}
@@ -12,14 +12,43 @@ const css=`.mz-plans{display:grid;gap:12px}@media(min-width:700px){.mz-plans{gri
 .mz-g{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:12px;display:flex;flex-direction:column}.mz-g .i{font-size:26px}.mz-g b{margin:4px 0}.mz-g p{font-size:12px;color:#8b949e;flex:1;margin:4px 0 8px}
 .mz-g a{background:#f0b429;color:#000!important;text-decoration:none;font-weight:700;font-size:13px;text-align:center;padding:8px;border-radius:8px}
 .mz-ftc{font-size:11px;color:#8b949e;margin-top:8px}.mz-store{display:flex;gap:10px;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#e5484d22,#161b22);border:1px solid #e5484d55;border-radius:12px;padding:12px;margin:10px 0}
-.mz-store a{white-space:nowrap}.mz-lock{border:1px dashed #f0b429;border-radius:12px;padding:14px;text-align:center;color:#f0b429}`;
+.mz-store a{white-space:nowrap}.mz-lock{border:1px dashed #f0b429;border-radius:12px;padding:14px;text-align:center;color:#f0b429}
+.mz-guides{margin:8px 0 12px;padding:12px;border:1px solid #e5484d55;border-radius:14px;background:linear-gradient(135deg,#e5484d18,#161b22 55%)}
+.mz-guides .gh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mz-guides .gh b{font-size:15px}.mz-guides .gh .all{font-size:12px;font-weight:700;color:#f0b429;text-decoration:none;white-space:nowrap}
+.mz-gstrip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(148px,1fr);gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.mz-gc{scroll-snap-align:start;background:#0d1117;border:1px solid #30363d;border-radius:12px;padding:10px;display:flex;flex-direction:column;min-height:132px}
+.mz-gc .i{font-size:22px}.mz-gc b{font-size:12px;line-height:1.3;margin:4px 0;flex:1}.mz-gc .pr{font-size:11px;color:#8b949e;margin-bottom:6px}
+.mz-gc a{display:block;text-align:center;background:#e5484d;color:#fff!important;text-decoration:none;font-weight:700;font-size:12px;padding:7px 8px;border-radius:8px}
+@media(min-width:900px){.mz-gstrip{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);grid-auto-columns:unset;overflow:visible}}`;
 const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 C.isMember=()=>localStorage.getItem(C.MEMBER_KEY)==='1';
+function guideList(stCode){
+  const out=[];
+  (C.GUIDES_FEATURED||[]).forEach(key=>{
+    if(key==='stateKit'){ out.push(C.stateKit(stCode)); return; }
+    const g=C.PAYHIP&&C.PAYHIP[key]; if(g) out.push(g);
+  });
+  return out;
+}
 C.renderPlans=(el,o)=>{const L=C.MEMBERSHIP_LINKS;el.innerHTML=`<div class="mz-plans">
-<div class="mz-plan"><h3>Free</h3><div class="mz-price">$0</div><ul>${o.free.map(x=>`<li>${x}</li>`).join('')}</ul><span class="mz-btn alt">${C.isMember()?'Included':'Current plan'}</span></div>
-<div class="mz-plan pro"><span class="mz-tag">BEST VALUE</span><h3>Member</h3><div class="mz-price">${o.mo}<small>/month</small></div><div class="muted note tiny">or ${o.yr}/year (${o.save})</div>
+<div class="mz-plan"><h3>Free reading</h3><div class="mz-price">$0</div><ul>${o.free.map(x=>`<li>${x}</li>`).join('')}</ul><span class="mz-btn alt">${C.isMember()?'Included':'Current plan'}</span></div>
+<div class="mz-plan pro"><span class="mz-tag">BEST VALUE</span><h3>Insider Member</h3><div class="mz-price">${o.mo}<small>/month</small></div><div class="muted note tiny">or ${o.yr}/year (${o.save})</div>
 <ul>${o.pro.map(x=>`<li>${x}</li>`).join('')}</ul><a class="mz-btn" href="${L.monthly}" target="_blank" rel="noopener">Join monthly · ${o.mo}</a><a class="mz-btn alt" href="${L.yearly}" target="_blank" rel="noopener">Join yearly · ${o.yr}</a></div></div>
-<p class="mz-ftc">Secure checkout by Payhip. Cancel anytime. ${C.isMember()?'<b style="color:#3fb950">Member features unlocked on this device.</b>':''}</p>`;};
-C.renderGear=(el,compact)=>{el.innerHTML=`<div class="mz-gear">${Object.values(C.AFFILIATE).map(g=>`<div class="mz-g"><span class="i">${g.icon}</span><b>${g.name}</b>${compact?'':`<p>${g.note}</p>`}<a href="${g.url}" target="_blank" rel="sponsored noopener">View on Amazon</a></div>`).join('')}</div><p class="mz-ftc">${C.FTC_DISCLOSURE} Prices and availability are shown on Amazon.</p>`;};
+<p class="mz-ftc">Secure checkout by Payhip. Cancel anytime. Membership is a paid plan. ${C.isMember()?'<b style="color:#3fb950">Member features unlocked on this device.</b>':''}</p>`;};
+C.renderGuidesTop=(el,stCode)=>{
+  if(!el)return;
+  const items=guideList(stCode);
+  el.innerHTML=`<div class="mz-guides"><div class="gh"><b>📘 Digital Cultra Guides &amp; State Emergency Kits</b><a class="all" href="${C.STORE_URL}" target="_blank" rel="noopener">All 50 State Kits &amp; Guides →</a></div>
+<div class="mz-gstrip">${items.map(g=>`<div class="mz-gc"><span class="i">${g.icon||'📄'}</span><b>${g.name}</b><div class="pr">${g.price||''}${g.matched===false?' · browse store':''}</div><a href="${g.url}" target="_blank" rel="noopener">Get Guide →</a></div>`).join('')}</div>
+<p class="mz-ftc" style="margin:8px 0 0">${C.FTC_DISCLOSURE}</p></div>`;
+};
+C.renderGear=(el,compact,stCode)=>{
+  if(!el)return;
+  // Prefer Payhip readiness guides; fall back gracefully if config missing
+  let items=guideList(stCode);
+  if(!items.length && C.PAYHIP) items=Object.values(C.PAYHIP).slice(0,8);
+  el.innerHTML=`<div class="mz-gear">${items.map(g=>`<div class="mz-g"><span class="i">${g.icon||'📄'}</span><b>${g.name}</b>${compact?'':`<p>${g.note||''}</p>`}<a href="${g.url}" target="_blank" rel="noopener">Get Guide →</a></div>`).join('')}</div><p class="mz-ftc">${C.FTC_DISCLOSURE}</p>`;
+};
 C.renderStore=(el,txt)=>{el.innerHTML=`<div class="mz-store"><div><b>Digital Cultra Store</b><div class="tiny note muted">${txt}</div></div><a class="mz-btn" href="${C.STORE_URL}" target="_blank" rel="noopener">Shop now</a></div>`;};
 })();
