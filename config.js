@@ -1,25 +1,47 @@
 // ===== Digital Cultra monetization config (News) =====
-// Digital Cultra News Insider (Payhip membership rx0Sb)
+// Digital Cultra News Insider (Payhip membership rx0Sb) — paid plans, never "free"
 window.MEMBERSHIP_PAGE = "https://payhip.com/b/rx0Sb";
 window.MEMBERSHIP_LINKS = {
   monthly: "https://payhip.com/order?link=rx0Sb&pricing_plan=63Wd1yX9zw", // $4/mo
   yearly:  "https://payhip.com/order?link=rx0Sb&pricing_plan=ZwzKa405G9"  // $36/yr
 };
-// TODO(owner): replace 'TODO-20' with your Amazon Associates tracking ID (e.g. yourid-20) after approval.
-window.AFFILIATE_TAG = "TODO-20";
-const _az = q => "https://www.amazon.com/s?k=" + encodeURIComponent(q) + "&tag=" + window.AFFILIATE_TAG;
-window.AFFILIATE = {
-  gobag:      {name:"Go-bag / 72-hour kit", icon:"🎒", note:"Pre-packed bag for grabbing and going.", url:_az("72 hour emergency go bag")},
-  radio:      {name:"NOAA weather radio",   icon:"📻", note:"Hand-crank/battery radio with NOAA alerts.", url:_az("NOAA weather alert radio hand crank")},
-  water:      {name:"Water filter",         icon:"💧", note:"Personal or gravity water filter.", url:_az("emergency water filter")},
-  power:      {name:"Power bank / solar",   icon:"🔋", note:"Keep phones charged when power is out.", url:_az("solar power bank")},
-  firstaid:   {name:"First aid kit",        icon:"🩹", note:"Home and car first aid kits.", url:_az("first aid kit")},
-  scanner:    {name:"Police/fire scanner",  icon:"📡", note:"Listen to local public-safety radio.", url:_az("police scanner digital")},
-  flashlight: {name:"Flashlight / headlamp",icon:"🔦", note:"LED flashlights, headlamps, batteries.", url:_az("LED flashlight headlamp emergency")},
-  generator:  {name:"Generator / power station", icon:"⚡", note:"Portable generators and battery stations.", url:_az("portable power station generator")}
-};
 window.STORE_URL = "https://payhip.com/DigitalCultra";
-window.FTC_DISCLOSURE = "As an Amazon Associate we earn from qualifying purchases.";
-// Client-side member flag ONLY (localStorage 'dcn_member'='1'). NOT secure: real gating needs a backend
-// that verifies Payhip membership (e.g. Payhip webhook/license check) before serving member content.
+
+// Live Payhip products verified from payhip.com/DigitalCultra (and Illinois kit page).
+// NEVER invent /b/ slugs — unknown state kits fall back to STORE_URL.
+window.PAYHIP = {
+  resetYears: {name:"The Reset Years: Ultimate Survival Guide", icon:"📘", note:"Printable survival guide for uncertain years.", url:"https://payhip.com/b/2FRZT", price:"$9.99"},
+  debtFree:   {name:"Debt Free Blueprint", icon:"💸", note:"Snowball & avalanche payoff planner + trackers.", url:"https://payhip.com/b/SFugO", price:"$5.99"},
+  bookkeeping:{name:"Side Hustle Bookkeeping Kit", icon:"📒", note:"Income, expense, mileage & quarterly tax tracker.", url:"https://payhip.com/b/XOWjb", price:"$9.99"},
+  getHired:   {name:"Get Hired: 2027 Job Search Playbook", icon:"💼", note:"Resume formulas, scripts, interview prep & trackers.", url:"https://payhip.com/b/2WvdE", price:"$11.99"},
+  caregiver:  {name:"The Caregiver's Organizer", icon:"🩺", note:"Medication log, medical binder & care planner.", url:"https://payhip.com/b/D2ihq", price:"$7.99"},
+  mealPlan:   {name:"Meal Plan Made Simple", icon:"🍽️", note:"Weekly menus, grocery lists & food-safety guide.", url:"https://payhip.com/b/vHSPc", price:"$4.99"},
+  focus:      {name:"The Focus Planner", icon:"🎯", note:"90-day undated planner with habit & goal systems.", url:"https://payhip.com/b/mroS5", price:"$7.99"},
+  homeschool: {name:"The Homeschool Planner", icon:"📚", note:"Undated planner & record keeper (up to 4 kids).", url:"https://payhip.com/b/ayXVT", price:"$7.99"},
+  fitness:    {name:"The 12-Week Fitness Tracker", icon:"🏃", note:"Beginner workout plan & printable log.", url:"https://payhip.com/b/SnvPp", price:"$5.99"},
+  wedding:    {name:"The Complete Wedding Planner 2027", icon:"💍", note:"Research-backed guide + 22 printable worksheets.", url:"https://payhip.com/b/vmy9e", price:"$9.99"},
+  kindergarten:{name:"Ready for Kindergarten!", icon:"✏️", note:"Parent guide + 60+ printable activity pages.", url:"https://payhip.com/b/XIk2G", price:"$3.99"}
+};
+
+// State Family Emergency Safety Kits with verified Payhip /b/ URLs only.
+// Codes match profile.state (USPS). Missing states → STORE_URL (never a guessed slug).
+window.STATE_KITS = {
+  IL: {name:"Illinois Family Emergency Safety Kit", url:"https://payhip.com/b/YWe8q"},
+  VA: {name:"Virginia Family Emergency Safety Kit", url:"https://payhip.com/b/aLdKc"},
+  WA: {name:"Washington Family Emergency Safety Kit", url:"https://payhip.com/b/mk0PU"},
+  WV: {name:"West Virginia Family Emergency Safety Kit", url:"https://payhip.com/b/krVFt"},
+  WI: {name:"Wisconsin Family Emergency Safety Kit", url:"https://payhip.com/b/um1B3"},
+  WY: {name:"Wyoming Family Emergency Safety Kit", url:"https://payhip.com/b/0dRSo"}
+};
+window.stateKit = function(st){
+  const k = window.STATE_KITS[(st||"").toUpperCase()];
+  if(k) return {name:k.name, icon:"🛡️", note:"State-specific 2027 family emergency workbook.", url:k.url, price:"$5", matched:true};
+  const label = (st||"Your state") + " Family Emergency Safety Kit";
+  return {name:label, icon:"🛡️", note:"All 50 state kits live in the Digital Cultra store.", url:window.STORE_URL, price:"$5", matched:false};
+};
+
+// Featured strip + sidebar cards (Payhip digital products).
+window.GUIDES_FEATURED = ["resetYears","stateKit","debtFree","getHired","mealPlan","focus"];
+window.AFFILIATE = null; // legacy Amazon affiliate removed — money goes to Payhip checkouts
+window.FTC_DISCLOSURE = "Digital downloads sold by Digital Cultra on Payhip. Instant PDF delivery after checkout.";
 window.MEMBER_KEY = "dcn_member";

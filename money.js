@@ -1,12 +1,16 @@
 // News-site monetization wiring. Member gating is a CLIENT-SIDE FLAG ONLY (see README).
 (function(){
 const $=s=>document.querySelector(s), member=isMember();
+let st='IL';
+try{const p=JSON.parse(localStorage.getItem('dcn_profile')||'null'); if(p&&p.state) st=p.state;}catch(e){}
 renderPlans($('#planbox'),{mo:'$4',yr:'$36',save:'save 25%',
  free:['Headlines from every side','Local, national & world feeds','Top 3 underreported stories'],
  pro:['Full Underreported section','Daily “what they buried” email digest','Location alerts for your city/state','No ads']});
-renderGear($('#gear'),true);
-renderStore($('#store1'),'Family Emergency Kits for all 50 states, guides & more.');
-renderStore($('#store2'),'Kits, guides & shirts.');renderStore($('#store3'),'Family Emergency Kits, FACT Book, Survival Guide & shirts.');
+if($('#guides')) renderGuidesTop($('#guides'), st);
+renderGear($('#gear'),true, st);
+renderStore($('#store1'),'Family Emergency Kits for all 50 states, survival guides & planners — instant PDF checkout.');
+renderStore($('#store2'),'State kits, survival guides & planners.');
+renderStore($('#store3'),'Family Emergency Kits, Ultimate Survival Guide & more.');
 function route(){const m=location.hash==='#membership';$('#plans').classList.toggle('hidden',!m);
  const prof=localStorage.getItem('dcn_profile');$('#app').classList.toggle('hidden',m||!prof);$('#onb').classList.toggle('hidden',m||!!prof);if(m)scrollTo(0,0);}
 addEventListener('hashchange',route);if(location.hash==='#membership')route();

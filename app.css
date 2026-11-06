@@ -7,7 +7,7 @@ header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-betwee
 label{display:block;margin:10px 0;font-size:13px;color:#8b949e}input,select{width:100%;margin-top:4px;padding:11px;border-radius:9px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:15px}
 .btn{width:100%;padding:12px;border:0;border-radius:9px;background:#e5484d;color:#fff;font-weight:700;font-size:15px;margin-top:6px}
 .chip{background:#21262d;border:1px solid #30363d;color:#e6edf3;border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer;white-space:nowrap}.chip.on{background:#1f6feb;border-color:#1f6feb}
-.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0}.tools{position:sticky;top:50px;z-index:4;background:#0d1117ee;padding:6px 0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0}.tools{position:sticky;top:50px;z-index:4;background:#0d1117ee;padding:6px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.tools #q{flex:1;min-width:180px}
 .sec{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:#8b949e;margin:22px 0 4px}.sec.u{color:#f0b429}
 .row{display:grid;grid-auto-flow:column;grid-auto-columns:85%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory}.row .card{scroll-snap-align:start;border-color:#f0b42955}
 .story{cursor:pointer;transition:border-color .2s}.story:hover{border-color:#1f6feb}.story h3{font-size:16px;margin:6px 0}
